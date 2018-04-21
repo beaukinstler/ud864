@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+<!-- this code has been changed to test out some ideas I had for 
+calulating details of the markers.  Summing the custom propery "value"
+and also making an "Area" show after creating the polygon 
+I forked and change the Udacity repo, mainly to quickly highlight those changes.
+If you use, dont' forget to add the API Key at the bottom.
+-->
 <html>
   <head>
     <style>
@@ -97,6 +104,13 @@
         <div>
           <input id="zoom-to-area-text" type="text" placeholder="Enter your favorite area!">
           <input id="zoom-to-area" type="button" value="Zoom">
+        </div>
+
+        <div id='totalValue'>
+          
+        </div>
+        <div id='shapeArea'>
+          
         </div>
       </div>
       <div id="map"></div>
@@ -230,7 +244,11 @@
             title: title,
             animation: google.maps.Animation.DROP,
             icon: defaultIcon,
-            id: i
+            id: i,
+            // Creating Custom property value as an example
+            value: 50+i,
+            label: ""+ 50+i + "",
+            zIndex: 50+i
           });
           // Push the marker to our array of markers.
           markers.push(marker);
@@ -305,7 +323,7 @@
               var nearStreetViewLocation = data.location.latLng;
               var heading = google.maps.geometry.spherical.computeHeading(
                 nearStreetViewLocation, marker.position);
-                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+                infowindow.setContent('<div>' + marker.value + '</div><div id="points"></div><div id="pano"></div>');
                 var panoramaOptions = {
                   position: nearStreetViewLocation,
                   pov: {
@@ -313,6 +331,8 @@
                     pitch: 30
                   }
                 };
+                var points = document.getElementById('points');
+                points.innerHTML = marker.value * 100;
               var panorama = new google.maps.StreetViewPanorama(
                 document.getElementById('pano'), panoramaOptions);
             } else {
@@ -377,13 +397,19 @@
       // and shows only the ones within it. This is so that the
       // user can specify an exact area of search.
       function searchWithinPolygon() {
+        var sumValue = 0;
         for (var i = 0; i < markers.length; i++) {
           if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
+            sumValue += markers[i].value;
             markers[i].setMap(map);
+
           } else {
             markers[i].setMap(null);
           }
         }
+        document.getElementById("totalValue").innerHTML = sumValue;
+        var area = google.maps.geometry.spherical.computeArea(polygon.getPath());
+        document.getElementById("shapeArea").innerHTML = area;
       }
 
       // This function takes the input value in the find nearby area text input
@@ -418,7 +444,7 @@
 
     <script async defer
         src=
-        "https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing&key=MYAPIKEY&v=3&callback=initMap">
+        "https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing&key=TODO_ADD_API_KEY&v=3&callback=initMap">
     </script>
 
   </body>
